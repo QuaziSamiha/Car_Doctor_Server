@@ -28,6 +28,7 @@ async function run() {
     // Connect the client to the server	(optional starting in v4.7)
     await client.connect();
     const serviceCollection = client.db("Car_Doctor").collection("services");
+    const checkOutCollection = client.db("Car_Doctor").collection("checkouts");
 
     app.get("/services", async (req, res) => {
       const cursor = serviceCollection.find();
@@ -39,16 +40,19 @@ async function run() {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) };
       const options = {
-        projection: {
-          title: 1,
-          // price: 1,
-          // service_id: 1
-        },
+        //  _id will be given by default
+        projection: { title: 1, service_id: 1, price: 1 }, // these specific data from each object will be load
       };
       // const result = await serviceCollection.findOne(query);
       const result = await serviceCollection.findOne(query, options);
       res.send(result);
     });
+
+    // bookings
+    app.post('/checkouts', async(req, res) => {
+      const checkouts = req.body;
+      console.log(checkouts)
+    })
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
